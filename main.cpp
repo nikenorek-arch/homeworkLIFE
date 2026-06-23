@@ -116,36 +116,22 @@ void delete_two_dim_array(int** arr, int row, int col){
 
 //чтение файла
 void addLifeInArrayFromFile(int& row, int& col, int**& myField, int**& myFieldCopy, bool& read){
-    int k = 0;
     int r = 0, c = 0;
 
     fstream file("in.txt", ios::in);
     if (file.is_open()){
-        while(!file.eof()){
+        if(file >> row >> col){                             //ОКАЗЫАЕТСЯ ТАК МОЖНО =()
 
-            if (k == 0){
-                file >> row;
-            }
-            else if (k == 1){
-                file >> col;
+            if (row <= 0 || col <= 0){
+                cout << "Неверный размер сетки!";
+                read = true; 
+                return;
+            } 
 
-                //создаю массивы по размеру из txt
-                myField = create_two_dim_array(row, col);
-                myFieldCopy = create_two_dim_array(row, col);
-                fill_two_dim_array(myField, row, col);
-
-            }
-            else{
-                if(k%2 == 0) {
-                    file >> r;
-                }
-                else{
-                    //заполняю живые клетки по координатам из txt
-                    file >> c;
-                    myField[r][c] = 1;
-                }
-            }
-            k++;
+            myField = create_two_dim_array(row, col);
+            myFieldCopy = create_two_dim_array(row, col);
+            fill_two_dim_array(myField, row, col);
+            while(file >> r >> c) myField[r][c] = 1;        //И ВОТ ТАК ТОЖЕ МОЖНО =() =() =()
         }
     }
     else{
@@ -177,12 +163,15 @@ int main()
 
     bool arrEqual = false;
     int lifeCount = 0;
-    int genCount = 0;
+    int genCount = 1;
+
+    lifeCount = getCountLife_two_dim_array(myField, row, col);
+    print_two_dim_array(myField, row, col);
+    cout << "Generation: " << genCount << ". Alive cells: " << lifeCount << endl;
 
     do{
         sleep(1);
         genCount++;
-
 
         newLife_two_dim_array(myField, myFieldCopy, row, col);
         
